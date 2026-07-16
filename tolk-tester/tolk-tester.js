@@ -149,6 +149,12 @@ class TolkTestCaseStderr {
         this.avoid = avoid
     }
 
+    static normalize_line(/**string*/ line) {
+        line = line.replace(/\\/g, '/')
+        line = line.replace(/^[A-Za-z]:\/.*?\/(tests\/)/i, '$1')
+        return line.replace(/(^|[^A-Za-z0-9_])[A-Za-z]:\/root\//gi, '$1/root/')
+    }
+
     check(/**string*/ stderr) {
         const line_match = this.find_pattern_in_stderr(stderr.split(/\n/))
         if (line_match === -1 && !this.avoid)
@@ -172,8 +178,8 @@ class TolkTestCaseStderr {
         if (offset >= stderr.length)
             return false
 
-        const line_pattern = this.stderr_pattern[pattern_offset]
-        const line_output = stderr[offset]
+        const line_pattern = TolkTestCaseStderr.normalize_line(this.stderr_pattern[pattern_offset])
+        const line_output = TolkTestCaseStderr.normalize_line(stderr[offset])
         return line_output.includes(line_pattern) && this.try_match_pattern(pattern_offset + 1, stderr, offset + 1)
     }
 }

@@ -148,6 +148,12 @@ class TolkTestCaseStderr:
         self.stderr_pattern = stderr_pattern
         self.avoid = avoid
 
+    @staticmethod
+    def normalize_line(line: str):
+        line = line.replace("\\", "/")
+        line = re.sub(r"^[A-Za-z]:/.+?/(tests/)", r"\1", line, flags=re.IGNORECASE)
+        return re.sub(r"(^|[^A-Za-z0-9_])[A-Za-z]:/root/", r"\1/root/", line, flags=re.IGNORECASE)
+
     def check(self, stderr: str):
         line_match = self.find_pattern_in_stderr(stderr.splitlines())
         if line_match == -1 and not self.avoid:
@@ -169,8 +175,8 @@ class TolkTestCaseStderr:
         if offset >= len(stderr):
             return False
 
-        line_pattern = self.stderr_pattern[pattern_offset]
-        line_output = stderr[offset]
+        line_pattern = self.normalize_line(self.stderr_pattern[pattern_offset])
+        line_output = self.normalize_line(stderr[offset])
         return line_output.find(line_pattern) != -1 and self.try_match_pattern(pattern_offset + 1, stderr, offset + 1)
 
 

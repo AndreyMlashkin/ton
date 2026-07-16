@@ -816,6 +816,10 @@ ton_test(test-adnl)
 ton_test(test-dht)
 ton_test(test-rldp2)
 ton_test(test-emulator)
+if (WIN32)
+  set_property(TEST test-emulator PROPERTY ENVIRONMENT
+    "PATH=${CMAKE_CURRENT_BINARY_DIR}/emulator;$ENV{PATH}")
+endif()
 
 ton_test(test-fec)
 ton_test(test-tddb ${TEST_OPTIONS})
